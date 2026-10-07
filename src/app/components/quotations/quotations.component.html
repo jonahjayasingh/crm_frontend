@@ -1,0 +1,64 @@
+<div class="quotations-page">
+  <div class="page-header">
+    <div>
+      <h2>Sales Quotations</h2>
+      <p class="text-muted">Draft and issue official commercial proposals</p>
+    </div>
+    <button class="btn btn-primary" (click)="openModal()"><i class="fa-solid fa-plus"></i> Create Quotation</button>
+  </div>
+
+  <div class="glass-card table-card">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Quote Number</th>
+            <th>Customer</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Valid Until</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let q of quotations">
+            <td><strong>{{ q.quotationNumber }}</strong></td>
+            <td>{{ q.customerName || 'Customer #' + q.customerId }}</td>
+            <td class="text-emerald">${{ q.totalAmount | number:'1.2-2' }}</td>
+            <td><span class="badge badge-purple">{{ q.status }}</span></td>
+            <td>{{ q.validUntil || '-' }}</td>
+            <td>
+              <button class="btn btn-danger btn-icon" (click)="deleteQuotation(q.id!)"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showModal">
+    <div class="modal-content glass-card">
+      <h3>New Sales Quotation</h3>
+      <form (ngSubmit)="saveQuotation()">
+        <div class="form-group">
+          <label>Quote # *</label>
+          <input type="text" [(ngModel)]="formData.quotationNumber" name="quotationNumber" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label>Customer *</label>
+          <select [(ngModel)]="formData.customerId" name="customerId" class="form-control" required>
+            <option *ngFor="let c of customers" [value]="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Total Amount ($) *</label>
+          <input type="number" [(ngModel)]="formData.totalAmount" name="totalAmount" class="form-control" required />
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Quote</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

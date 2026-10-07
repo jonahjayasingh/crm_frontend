@@ -1,0 +1,74 @@
+<div class="invoices-page">
+  <div class="page-header">
+    <div>
+      <h2>Invoicing & Payments</h2>
+      <p class="text-muted">Track billing records, due dates, and payment statuses</p>
+    </div>
+    <button class="btn btn-primary" (click)="openModal()"><i class="fa-solid fa-plus"></i> Generate Invoice</button>
+  </div>
+
+  <div class="glass-card table-card">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Invoice #</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Issue Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let inv of invoices">
+            <td><strong>{{ inv.invoiceNumber }}</strong></td>
+            <td>{{ inv.customerName || 'Customer #' + inv.customerId }}</td>
+            <td class="text-emerald">${{ inv.amount | number:'1.2-2' }}</td>
+            <td>
+              <span class="badge" [ngClass]="inv.status === 'PAID' ? 'badge-success' : 'badge-danger'">{{ inv.status }}</span>
+            </td>
+            <td>{{ inv.issueDate || '-' }}</td>
+            <td>
+              <button class="btn btn-danger btn-icon" (click)="deleteInvoice(inv.id!)"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showModal">
+    <div class="modal-content glass-card">
+      <h3>Generate New Invoice</h3>
+      <form (ngSubmit)="saveInvoice()">
+        <div class="form-group">
+          <label>Invoice Number *</label>
+          <input type="text" [(ngModel)]="formData.invoiceNumber" name="invoiceNumber" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label>Customer *</label>
+          <select [(ngModel)]="formData.customerId" name="customerId" class="form-control" required>
+            <option *ngFor="let c of customers" [value]="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Amount ($) *</label>
+          <input type="number" [(ngModel)]="formData.amount" name="amount" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select [(ngModel)]="formData.status" name="status" class="form-control">
+            <option value="UNPAID">UNPAID</option>
+            <option value="PAID">PAID</option>
+            <option value="OVERDUE">OVERDUE</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Invoice</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

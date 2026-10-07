@@ -1,0 +1,265 @@
+<div class="events-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-title">
+      <h1><i class="fa-regular fa-calendar-check me-2"></i> Event Management & Calendar</h1>
+      <p>Schedule meetings, client demos, follow-ups, and conference calls with full team visibility.</p>
+    </div>
+    <div class="header-actions">
+      <div class="view-switcher btn-group">
+        <button class="btn" [class.btn-primary]="viewMode === 'month'" [class.btn-secondary]="viewMode !== 'month'" (click)="viewMode = 'month'">
+          <i class="fa-solid fa-calendar-days me-1"></i> Calendar
+        </button>
+        <button class="btn" [class.btn-primary]="viewMode === 'list'" [class.btn-secondary]="viewMode !== 'list'" (click)="viewMode = 'list'">
+          <i class="fa-solid fa-list-ul me-1"></i> Agenda List
+        </button>
+      </div>
+      <button (click)="openCreateModal()" class="btn btn-primary">
+        <i class="fa-solid fa-plus me-1"></i> Schedule Event
+      </button>
+    </div>
+  </div>
+
+  <div class="loading-spinner text-center py-5" *ngIf="loading">
+    <i class="fa-solid fa-circle-notch fa-spin fa-2x text-primary"></i>
+    <p class="mt-2 text-muted">Loading events & calendar schedule...</p>
+  </div>
+
+  <!-- Calendar View Mode -->
+  <div class="calendar-wrapper glass-card" *ngIf="!loading && viewMode === 'month'">
+    <!-- Month Navigation Bar -->
+    <div class="calendar-nav">
+      <div class="nav-controls">
+        <button (click)="prevMonth()" class="btn btn-secondary btn-icon"><i class="fa-solid fa-chevron-left"></i></button>
+        <h2 class="current-month-title">{{ currentDate | date:'MMMM yyyy' }}</h2>
+        <button (click)="nextMonth()" class="btn btn-secondary btn-icon"><i class="fa-solid fa-chevron-right"></i></button>
+        <button (click)="today()" class="btn btn-outline-secondary btn-sm ms-2">Today</button>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="dot meeting"></span> Meeting</span>
+        <span class="legend-item"><span class="dot demo"></span> Demo</span>
+        <span class="legend-item"><span class="dot follow"></span> Follow-up</span>
+        <span class="legend-item"><span class="dot webinar"></span> Webinar</span>
+      </div>
+    </div>
+
+    <!-- Day Headers -->
+    <div class="calendar-grid-header">
+      <div class="day-name">Sun</div>
+      <div class="day-name">Mon</div>
+      <div class="day-name">Tue</div>
+      <div class="day-name">Wed</div>
+      <div class="day-name">Thu</div>
+      <div class="day-name">Fri</div>
+      <div class="day-name">Sat</div>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="calendar-grid">
+      <div 
+        *ngFor="let day of monthDays" 
+        class="calendar-day-cell"
+        [class.other-month]="!day.isCurrentMonth"
+        [class.today]="day.isToday"
+        (click)="openCreateModal(day.date)">
+        
+        <div class="day-top">
+          <span class="day-number">{{ day.date.getDate() }}</span>
+          <span class="event-count-badge" *ngIf="day.events.length > 0">{{ day.events.length }}</span>
+        </div>
+
+        <div class="day-events-list">
+          <div 
+            *ngFor="let ev of day.events | slice:0:3" 
+            class="event-pill"
+            [class.type-meeting]="ev.eventType === 'MEETING'"
+            [class.type-demo]="ev.eventType === 'DEMO'"
+            [class.type-follow_up]="ev.eventType === 'FOLLOW_UP'"
+            [class.type-webinar]="ev.eventType === 'WEBINAR'"
+            (click)="viewEventDetails(ev, $event)">
+            <span class="pill-time">{{ ev.startTime | date:'shortTime' }}</span>
+            <span class="pill-title">{{ ev.title }}</span>
+          </div>
+          <div class="more-events" *ngIf="day.events.length > 3">
+            +{{ day.events.length - 3 }} more
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agenda List View Mode -->
+  <div class="agenda-wrapper glass-card" *ngIf="!loading && viewMode === 'list'">
+    <div class="table-responsive">
+      <table class="table custom-table">
+        <thead>
+          <tr>
+            <th>Event & Type</th>
+            <th>Schedule</th>
+            <th>Location / Link</th>
+            <th>Associated Client</th>
+            <th>Organized By</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ev of events">
+            <td>
+              <div class="event-cell-title">
+                <strong>{{ ev.title }}</strong>
+                <span class="badge type-badge" [ngClass]="'badge-' + (ev.eventType?.toLowerCase() || 'meeting')">
+                  {{ ev.eventType }}
+                </span>
+              </div>
+            </td>
+            <td>
+              <div class="time-cell">
+                <div><i class="fa-regular fa-clock me-1"></i> {{ ev.startTime | date:'mediumDate' }}</div>
+                <small class="text-muted">{{ ev.startTime | date:'shortTime' }} - {{ ev.endTime | date:'shortTime' }}</small>
+              </div>
+            </td>
+            <td>{{ ev.location || 'N/A' }}</td>
+            <td>{{ ev.customerName || 'None' }}</td>
+            <td>{{ ev.assignedToUserName || 'System' }}</td>
+            <td>
+              <span class="status-pill" [class.scheduled]="ev.status === 'SCHEDULED'" [class.completed]="ev.status === 'COMPLETED'">
+                {{ ev.status }}
+              </span>
+            </td>
+            <td>
+              <button (click)="openEditModal(ev, $event)" class="btn-action edit" title="Edit"><i class="fa-solid fa-pen"></i></button>
+              <button (click)="deleteEvent(ev.id, $event)" class="btn-action delete" title="Cancel"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+          <tr *ngIf="events.length === 0">
+            <td colspan="7" class="text-center py-4">No events scheduled. Click "Schedule Event" to create one.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Event Creation / Edit Modal -->
+  <div class="modal-backdrop" *ngIf="showModal">
+    <div class="modal-dialog glass-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-calendar-plus me-2"></i> {{ isEditing ? 'Edit Scheduled Event' : 'Schedule New Event' }}</h3>
+        <button (click)="closeModal()" class="btn-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="saveEvent()">
+          <div class="form-group mb-3">
+            <label>Event Title *</label>
+            <input type="text" [(ngModel)]="currentEvent.title" name="title" class="form-control" placeholder="e.g. Q3 Sales Demo with Acme Corp" required>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 form-group mb-3">
+              <label>Event Type</label>
+              <select [(ngModel)]="currentEvent.eventType" name="eventType" class="form-control">
+                <option value="MEETING">Meeting</option>
+                <option value="DEMO">Demo</option>
+                <option value="FOLLOW_UP">Follow-up</option>
+                <option value="WEBINAR">Webinar</option>
+                <option value="CONFERENCE">Conference</option>
+              </select>
+            </div>
+            <div class="col-md-6 form-group mb-3">
+              <label>Status</label>
+              <select [(ngModel)]="currentEvent.status" name="status" class="form-control">
+                <option value="SCHEDULED">Scheduled</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="CANCELLED">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 form-group mb-3">
+              <label>Start Time *</label>
+              <input type="datetime-local" [(ngModel)]="currentEvent.startTime" name="startTime" class="form-control" required>
+            </div>
+            <div class="col-md-6 form-group mb-3">
+              <label>End Time *</label>
+              <input type="datetime-local" [(ngModel)]="currentEvent.endTime" name="endTime" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="form-group mb-3">
+            <label>Location / Video Link</label>
+            <input type="text" [(ngModel)]="currentEvent.location" name="location" class="form-control" placeholder="e.g. Zoom Link or Conference Room B">
+          </div>
+
+          <div class="form-group mb-3">
+            <label>Related Customer</label>
+            <select [(ngModel)]="currentEvent.customerId" name="customerId" class="form-control">
+              <option [ngValue]="undefined">-- Select Optional Customer --</option>
+              <option *ngFor="let c of customers" [value]="c.id">{{ c.name }} {{ c.collegeName ? '(' + c.collegeName + ')' : '' }}</option>
+            </select>
+          </div>
+
+          <div class="form-group mb-3">
+            <label>Event Notes & Agenda</label>
+            <textarea [(ngModel)]="currentEvent.description" name="description" class="form-control" rows="3" placeholder="Add meeting agenda or notes..."></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" (click)="closeModal()" class="btn btn-secondary">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check me-1"></i> Save Event</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Detail Popup Modal -->
+  <div class="modal-backdrop" *ngIf="selectedEventForDetails">
+    <div class="modal-dialog glass-card detail-modal">
+      <div class="modal-header">
+        <div>
+          <span class="badge type-badge mb-1">{{ selectedEventForDetails.eventType }}</span>
+          <h3>{{ selectedEventForDetails.title }}</h3>
+        </div>
+        <button (click)="closeDetails()" class="btn-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted" *ngIf="selectedEventForDetails.description">{{ selectedEventForDetails.description }}</p>
+        <div class="detail-info-grid">
+          <div class="info-row">
+            <i class="fa-regular fa-clock"></i>
+            <div>
+              <strong>Time:</strong>
+              <div>{{ selectedEventForDetails.startTime | date:'medium' }} &mdash; {{ selectedEventForDetails.endTime | date:'shortTime' }}</div>
+            </div>
+          </div>
+          <div class="info-row" *ngIf="selectedEventForDetails.location">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <strong>Location:</strong>
+              <div>{{ selectedEventForDetails.location }}</div>
+            </div>
+          </div>
+          <div class="info-row" *ngIf="selectedEventForDetails.customerName">
+            <i class="fa-solid fa-building"></i>
+            <div>
+              <strong>Customer:</strong>
+              <div>{{ selectedEventForDetails.customerName }}</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <i class="fa-solid fa-user"></i>
+            <div>
+              <strong>Organizer:</strong>
+              <div>{{ selectedEventForDetails.assignedToUserName || 'System User' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="openEditModal(selectedEventForDetails); closeDetails()" class="btn btn-primary"><i class="fa-solid fa-pen me-1"></i> Edit Event</button>
+        <button (click)="deleteEvent(selectedEventForDetails.id); closeDetails()" class="btn btn-danger"><i class="fa-solid fa-trash me-1"></i> Cancel Event</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+import { Routes } from '@angular/router';
+import { HomeComponent } from './components/home/home.component';
+import { AuthComponent } from './components/auth/auth.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { CustomersComponent } from './components/customers/customers.component';
+import { LeadsComponent } from './components/leads/leads.component';
+import { OpportunitiesComponent } from './components/opportunities/opportunities.component';
+import { TasksComponent } from './components/tasks/tasks.component';
+import { TicketsComponent } from './components/tickets/tickets.component';
+import { EventsComponent } from './components/events/events.component';
+import { ProductsComponent } from './components/products/products.component';
+import { QuotationsComponent } from './components/quotations/quotations.component';
+import { InvoicesComponent } from './components/invoices/invoices.component';
+import { AuditLogsComponent } from './components/audit-logs/audit-logs.component';
+
+export const routes: Routes = [
+  { path: '', component: HomeComponent },
+  { path: 'home', component: HomeComponent },
+  { path: 'login', component: AuthComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'customers', component: CustomersComponent },
+  { path: 'leads', component: LeadsComponent },
+  { path: 'opportunities', component: OpportunitiesComponent },
+  { path: 'tasks', component: TasksComponent },
+  { path: 'tickets', component: TicketsComponent },
+  { path: 'events', component: EventsComponent },
+  { path: 'products', component: ProductsComponent },
+  { path: 'quotations', component: QuotationsComponent },
+  { path: 'invoices', component: InvoicesComponent },
+  { path: 'audit-logs', component: AuditLogsComponent },
+  { path: '**', redirectTo: '' }
+];

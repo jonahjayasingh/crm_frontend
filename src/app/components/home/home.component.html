@@ -1,0 +1,362 @@
+<div class="apex-editorial-page">
+  
+  <!-- Architectural Top Bar -->
+  <header class="apex-header">
+    <div class="header-left">
+      <div class="brand-emblem">
+        <span class="emblem-code">APX</span>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">APEX CRM</span>
+        <span class="brand-sub">OPERATIONAL CONTROL SYSTEM</span>
+      </div>
+    </div>
+
+    <nav class="header-nav">
+      <a href="#architecture" class="nav-item">Architecture</a>
+      <a href="#workflow" class="nav-item">Lifecycle Workflow</a>
+      <a href="#security" class="nav-item">Security & Audit</a>
+    </nav>
+
+    <div class="header-right">
+      <ng-container *ngIf="isLoggedIn(); else guestNav">
+        <a routerLink="/dashboard" class="action-btn action-solid">
+          <span>ENTER WORKSPACE</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </ng-container>
+      <ng-template #guestNav>
+        <a routerLink="/login" class="nav-item">SIGN IN</a>
+        <a routerLink="/login" class="action-btn action-solid">
+          <span>ACCESS PLATFORM</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </a>
+      </ng-template>
+    </div>
+  </header>
+
+  <!-- Editorial Hero Section -->
+  <section class="hero-architectural">
+    <div class="hero-content">
+      <div class="system-status-pill">
+        <span class="status-indicator"></span>
+        <span class="status-text">ENTERPRISE SYSTEM ARCHITECTURE v2.4</span>
+      </div>
+
+      <h1 class="hero-headline">
+        Unified Revenue,<br>
+        Operations & Audit <br>
+        <span class="headline-accent">For Enterprise Teams.</span>
+      </h1>
+
+      <p class="hero-deck">
+        Apex CRM replaces fragmented tools with a tightly-coupled relational engine: connecting raw leads to qualified opportunities, signed quotes, customer billing, and immutable security audit logs.
+      </p>
+
+      <div class="hero-actions">
+        <button (click)="goToApp()" class="action-btn action-hero">
+          <span>{{ isLoggedIn() ? 'LAUNCH OPERATIONAL DASHBOARD' : 'OPEN APEX WORKSPACE' }}</span>
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </button>
+        <a href="#architecture" class="action-btn action-outline">
+          <span>EXPLORE ARCHITECTURE</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Live Interactive Blueprint Preview -->
+    <div class="hero-blueprint-card">
+      <div class="blueprint-header">
+        <div class="blueprint-title">
+          <i class="fa-solid fa-diagram-project"></i>
+          <span>LIVE ENTITY RELATIONAL MATRIX</span>
+        </div>
+        <span class="mono-badge">REST API CONNECTED</span>
+      </div>
+      <div class="blueprint-body">
+        <div class="blueprint-node node-customer">
+          <div class="node-icon"><i class="fa-solid fa-building"></i></div>
+          <div class="node-info">
+            <span class="node-label">CUSTOMER ENTITY</span>
+            <span class="node-value">Acme Global Tech</span>
+          </div>
+          <span class="node-tag">ACTIVE</span>
+        </div>
+
+        <div class="node-connector">
+          <div class="line"></div>
+          <span class="connector-label">RELATIONSHIP LINK</span>
+          <div class="line"></div>
+        </div>
+
+        <div class="blueprint-grid-nodes">
+          <div class="subnode">
+            <i class="fa-solid fa-chart-line text-indigo"></i>
+            <span class="subnode-title">Opportunity</span>
+            <span class="subnode-val">$45,000.00</span>
+          </div>
+          <div class="subnode">
+            <i class="fa-solid fa-file-invoice text-emerald"></i>
+            <span class="subnode-title">Quotation #108</span>
+            <span class="subnode-val">ACCEPTED</span>
+          </div>
+          <div class="subnode">
+            <i class="fa-solid fa-receipt text-sky"></i>
+            <span class="subnode-title">Invoice #INV-204</span>
+            <span class="subnode-val">PAID</span>
+          </div>
+          <div class="subnode">
+            <i class="fa-solid fa-shield-halved text-amber"></i>
+            <span class="subnode-title">Audit Record</span>
+            <span class="subnode-val">LOGGED</span>
+          </div>
+        </div>
+      </div>
+      <div class="blueprint-footer">
+        <span class="mono-text"><i class="fa-solid fa-microchip"></i> Transactional integrity verified across MySQL / Spring Security backends</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive System Architecture Section -->
+  <section id="architecture" class="architecture-section">
+    <div class="section-label-bar">
+      <span class="section-number">01</span>
+      <h2 class="section-title">Operational Architecture Modules</h2>
+    </div>
+
+    <!-- Tab Navigation Matrix -->
+    <div class="matrix-tabs">
+      <button 
+        *ngFor="let mod of modules" 
+        [class.active]="activeTab === mod.id" 
+        (click)="selectTab(mod.id)"
+        class="matrix-tab-btn">
+        <span class="tab-tag">{{ mod.tag }}</span>
+        <span class="tab-name">{{ mod.title.split('&')[0] }}</span>
+      </button>
+    </div>
+
+    <!-- Active Module Display Panel -->
+    <div class="module-display-panel" *ngIf="activeModule as mod">
+      <div class="panel-details">
+        <div class="module-badge">
+          <i class="fa-solid {{ mod.icon }}"></i>
+          <span>{{ mod.tag }}</span>
+        </div>
+        <h3 class="module-title">{{ mod.title }}</h3>
+        <p class="module-desc">{{ mod.subtitle }}</p>
+
+        <div class="module-feature-list">
+          <div class="feature-item" *ngFor="let feat of mod.features">
+            <i class="fa-solid fa-check-double"></i>
+            <span>{{ feat }}</span>
+          </div>
+        </div>
+
+        <button (click)="goToApp()" class="action-btn action-solid mt-4">
+          <span>ACCESS {{ mod.title.split(' ')[0].toUpperCase() }} MODULE</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <div class="panel-stat-box">
+        <div class="stat-card">
+          <span class="stat-label">{{ mod.statsLabel }}</span>
+          <div class="stat-value-large">{{ mod.statsValue }}</div>
+          <div class="stat-graph-sim">
+            <div class="bar bar-1"></div>
+            <div class="bar bar-2"></div>
+            <div class="bar bar-3"></div>
+            <div class="bar bar-4 active"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- End-to-End Enterprise Lifecycle Workflow -->
+  <section id="workflow" class="workflow-section">
+    <div class="section-label-bar">
+      <span class="section-number">02</span>
+      <h2 class="section-title">The Apex End-To-End Lifecycle</h2>
+    </div>
+
+    <div class="workflow-stepper">
+      <div 
+        class="step-card" 
+        [class.active]="activeWorkflowStep === 1" 
+        (click)="setWorkflowStep(1)">
+        <div class="step-num">STEP 01</div>
+        <h4 class="step-heading">Lead Qualification</h4>
+        <p class="step-body">Capture inbound prospect details and assign contact status without manual spreadsheet tracking.</p>
+      </div>
+
+      <div 
+        class="step-card" 
+        [class.active]="activeWorkflowStep === 2" 
+        (click)="setWorkflowStep(2)">
+        <div class="step-num">STEP 02</div>
+        <h4 class="step-heading">Deal & Quotation</h4>
+        <p class="step-body">Create commercial proposals with inventory product items and real-time total line calculation.</p>
+      </div>
+
+      <div 
+        class="step-card" 
+        [class.active]="activeWorkflowStep === 3" 
+        (click)="setWorkflowStep(3)">
+        <div class="step-num">STEP 03</div>
+        <h4 class="step-heading">Billing & Audit</h4>
+        <p class="step-body">Convert accepted quotes into accounts receivable invoices while creating indelible audit trail records.</p>
+      </div>
+    </div>
+
+    <!-- Active Step Flow View -->
+    <div class="workflow-visualization">
+      <div class="vis-header">
+        <span class="vis-title"><i class="fa-solid fa-sliders"></i> WORKFLOW EXECUTION PREVIEW</span>
+        <span class="vis-step-indicator">ACTIVE STEP {{ activeWorkflowStep }} / 3</span>
+      </div>
+
+      <div class="vis-content" [ngSwitch]="activeWorkflowStep">
+        <!-- Step 1 Preview -->
+        <div *ngSwitchCase="1" class="flow-row">
+          <div class="flow-card">
+            <span class="flow-meta">INBOUND LEAD</span>
+            <div class="flow-main">
+              <strong>Jonathan Vance</strong>
+              <span>CTO &bull; Nexus Robotics</span>
+            </div>
+            <span class="flow-status badge-new">STATUS: NEW</span>
+          </div>
+          <div class="flow-arrow"><i class="fa-solid fa-right-long"></i></div>
+          <div class="flow-card highlight">
+            <span class="flow-meta">ACTION EXECUTION</span>
+            <div class="flow-main">
+              <strong>Convert Lead to Customer</strong>
+              <span>Creates relational Customer record</span>
+            </div>
+            <span class="flow-status badge-success">CONVERTED</span>
+          </div>
+        </div>
+
+        <!-- Step 2 Preview -->
+        <div *ngSwitchCase="2" class="flow-row">
+          <div class="flow-card">
+            <span class="flow-meta">OPPORTUNITY #OPP-302</span>
+            <div class="flow-main">
+              <strong>Enterprise License Expansion</strong>
+              <span>Estimated Value: $12,500.00</span>
+            </div>
+            <span class="flow-status badge-info">PROPOSAL STAGE</span>
+          </div>
+          <div class="flow-arrow"><i class="fa-solid fa-right-long"></i></div>
+          <div class="flow-card highlight">
+            <span class="flow-meta">QUOTATION CREATED</span>
+            <div class="flow-main">
+              <strong>Quote #QT-2026-009</strong>
+              <span>2 Items &bull; 10% Volume Discount</span>
+            </div>
+            <span class="flow-status badge-warning">PENDING APPROVAL</span>
+          </div>
+        </div>
+
+        <!-- Step 3 Preview -->
+        <div *ngSwitchCase="3" class="flow-row">
+          <div class="flow-card">
+            <span class="flow-meta">ACCEPTED QUOTE</span>
+            <div class="flow-main">
+              <strong>Quote #QT-2026-009</strong>
+              <span>Total: $11,250.00</span>
+            </div>
+            <span class="flow-status badge-success">ACCEPTED</span>
+          </div>
+          <div class="flow-arrow"><i class="fa-solid fa-right-long"></i></div>
+          <div class="flow-card highlight">
+            <span class="flow-meta">INVOICE & AUDIT</span>
+            <div class="flow-main">
+              <strong>Invoice #INV-9901 & Log #9842</strong>
+              <span>Admin log: INVOICE_CREATED by user 'jonah'</span>
+            </div>
+            <span class="flow-status badge-primary">AUDITED & ISSUED</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security & Role Model -->
+  <section id="security" class="security-section">
+    <div class="security-grid">
+      <div class="security-text-col">
+        <span class="security-badge"><i class="fa-solid fa-user-shield"></i> ENTERPRISE SECURITY & GOVERNANCE</span>
+        <h2>Strict Role Isolation & Immutable Audit Trails</h2>
+        <p>
+          Every API transaction executed in Apex CRM passes through Spring Security JWT token evaluation. Admin users retain complete visibility into user audit trails, system access patterns, and modified entity fields.
+        </p>
+
+        <div class="security-points">
+          <div class="sec-point">
+            <div class="point-icon"><i class="fa-solid fa-key"></i></div>
+            <div>
+              <strong>JWT Stateless Authentication</strong>
+              <p>Secure token bearer authentication for every REST API endpoint.</p>
+            </div>
+          </div>
+          <div class="sec-point">
+            <div class="point-icon"><i class="fa-solid fa-eye"></i></div>
+            <div>
+              <strong>Granular Role Enforcement</strong>
+              <p>Distinguishes ADMIN capabilities from EMPLOYEE task permissions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="security-terminal-col">
+        <div class="terminal-window">
+          <div class="terminal-top">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="terminal-title">Apex Audit Log Stream (Live Feed)</span>
+          </div>
+          <div class="terminal-content mono-text">
+            <div class="log-line"><span class="log-time">[15:30:12]</span> <span class="log-user">system</span>: <span class="log-msg">JWT Auth Token validated for user 'admin'</span></div>
+            <div class="log-line"><span class="log-time">[15:30:14]</span> <span class="log-user">admin</span>: <span class="log-action">CREATE</span> entity Customer id=42</div>
+            <div class="log-line"><span class="log-time">[15:30:18]</span> <span class="log-user">admin</span>: <span class="log-action">CONVERT</span> Lead id=14 -> Customer id=42</div>
+            <div class="log-line"><span class="log-time">[15:30:25]</span> <span class="log-user">admin</span>: <span class="log-action">GENERATE</span> Quotation id=89 total=$14,500.00</div>
+            <div class="log-line highlighted"><span class="log-time">[15:30:31]</span> <span class="log-user">admin</span>: <span class="log-action">ISSUE_INVOICE</span> Invoice id=210 [AUDIT_RECORD_SAVED]</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final Call to Action -->
+  <section class="cta-editorial">
+    <div class="cta-content">
+      <h2>Launch Your Apex CRM Workspace</h2>
+      <p>Log in with your enterprise credentials or access the live workspace dashboard.</p>
+      <div class="cta-button-row">
+        <button (click)="goToApp()" class="action-btn action-hero">
+          <span>{{ isLoggedIn() ? 'GO TO DASHBOARD' : 'LOG IN TO SYSTEM' }}</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Product Specific Footer -->
+  <footer class="apex-footer">
+    <div class="footer-left">
+      <span class="brand-title">APEX CRM</span>
+      <span class="copyright">&copy; {{ currentYear }} Enterprise Customer Relationship Suite. Spring Boot & Angular Architecture.</span>
+    </div>
+    <div class="footer-links">
+      <a routerLink="/login">Authentication</a>
+      <a routerLink="/dashboard">Workspace</a>
+    </div>
+  </footer>
+
+</div>

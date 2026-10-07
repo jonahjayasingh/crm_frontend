@@ -1,0 +1,119 @@
+<div class="app-layout" *ngIf="!isStandalone; else authLayout">
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="sidebar-backdrop" *ngIf="isMobileSidebarOpen" (click)="closeMobileSidebar()"></div>
+
+  <!-- Sidebar Drawer -->
+  <aside class="sidebar glass-card" [class.mobile-open]="isMobileSidebarOpen">
+    <div class="sidebar-brand">
+      <div class="brand-info-wrapper">
+        <div class="brand-logo">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div class="brand-info">
+          <span class="brand-name">Apex CRM</span>
+          <span class="brand-sub">Enterprise Suite</span>
+        </div>
+      </div>
+      <button class="mobile-close-btn" (click)="closeMobileSidebar()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-item">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </a>
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <i class="fa-solid fa-chart-pie"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <div class="nav-section">CLIENT MANAGEMENT</div>
+      <a routerLink="/customers" routerLinkActive="active" class="nav-item">
+        <i class="fa-solid fa-users"></i>
+        <span>Customers</span>
+      </a>
+      <a routerLink="/leads" routerLinkActive="active" class="nav-item">
+        <i class="fa-solid fa-user-plus"></i>
+        <span>Leads</span>
+      </a>
+      <a routerLink="/opportunities" routerLinkActive="active" class="nav-item">
+        <i class="fa-solid fa-chart-line"></i>
+        <span>Opportunities</span>
+      </a>
+
+      <div class="nav-section">OPERATIONS & SUPPORT</div>
+      <a routerLink="/tasks" routerLinkActive="active" class="nav-item">
+        <i class="fa-solid fa-list-check"></i>
+        <span>Tasks</span>
+      </a>
+      <a routerLink="/tickets" routerLinkActive="active" class="nav-item">
+        <i class="fa-solid fa-headset"></i>
+        <span>Tickets</span>
+      </a>
+      <a routerLink="/events" routerLinkActive="active" class="nav-item">
+        <i class="fa-regular fa-calendar-check"></i>
+        <span>Events & Calendar</span>
+      </a>
+
+      <div class="nav-section">SALES & CATALOG</div>
+      <a routerLink="/products" routerLinkActive="active" class="nav-item">
+        <i class="fa-solid fa-box"></i>
+        <span>Products</span>
+      </a>
+      <a routerLink="/quotations" routerLinkActive="active" class="nav-item">
+        <i class="fa-solid fa-file-invoice"></i>
+        <span>Quotations</span>
+      </a>
+      <a routerLink="/invoices" routerLinkActive="active" class="nav-item">
+        <i class="fa-solid fa-receipt"></i>
+        <span>Invoices</span>
+      </a>
+
+      <div class="nav-section" *ngIf="isAdmin">ADMINISTRATION</div>
+      <a routerLink="/audit-logs" routerLinkActive="active" class="nav-item" *ngIf="isAdmin">
+        <i class="fa-solid fa-user-shield"></i>
+        <span>Audit Logs</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="avatar">{{ userName.charAt(0).toUpperCase() }}</div>
+        <div class="user-meta">
+          <span class="user-name">{{ userName }}</span>
+          <span class="user-role">{{ userRole }}</span>
+        </div>
+      </div>
+      <button (click)="logout()" class="logout-btn" title="Sign Out">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main View Area -->
+  <main class="main-content">
+    <header class="top-header glass-card">
+      <div class="header-left">
+        <button class="mobile-nav-toggle btn btn-secondary btn-icon" (click)="toggleMobileSidebar()" title="Toggle Navigation">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <span class="system-status"><i class="fa-solid fa-circle text-success"></i> Connected</span>
+      </div>
+      <div class="header-right">
+        <!-- Light / Dark Theme Toggle Button -->
+        <button class="btn btn-secondary btn-icon theme-toggle-btn" (click)="toggleTheme()" [title]="theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'">
+          <i class="fa-solid" [class.fa-sun]="theme === 'dark'" [class.fa-moon]="theme === 'light'"></i>
+        </button>
+        <button class="btn btn-secondary btn-icon"><i class="fa-solid fa-bell"></i></button>
+      </div>
+    </header>
+
+    <div class="content-body">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>
+
+<ng-template #authLayout>
+  <router-outlet></router-outlet>
+</ng-template>

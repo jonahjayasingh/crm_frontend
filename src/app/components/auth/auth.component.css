@@ -1,0 +1,79 @@
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: var(--bg-dark);
+}
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 36px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+.auth-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.auth-header h2 {
+  color: var(--text-main);
+  font-family: var(--font-heading);
+  margin-bottom: 4px;
+}
+.auth-header p {
+  color: var(--text-muted);
+}
+.logo-badge {
+  width: 56px;
+  height: 56px;
+  background: var(--gradient-primary);
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-glow);
+}
+.auth-tabs {
+  display: flex;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+}
+.auth-tabs button {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.auth-tabs button.active {
+  background: var(--accent-primary);
+  color: white;
+}
+.error-banner {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+.btn-block {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+}

@@ -1,0 +1,42 @@
+<div class="auth-container">
+  <div class="auth-card glass-card">
+    <div class="auth-header">
+      <div class="logo-badge">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <h2>Apex CRM</h2>
+      <p>Enterprise Sales & Customer Management</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button [class.active]="isLogin" (click)="isLogin = true">Login</button>
+      <button [class.active]="!isLogin" (click)="isLogin = false">Register</button>
+    </div>
+
+    <div *ngIf="errorMessage" class="error-banner">
+      <i class="fa-solid fa-circle-exclamation"></i> {{ errorMessage }}
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" [(ngModel)]="formData.name" name="name" class="form-control" placeholder="Enter username" required />
+      </div>
+
+      <div class="form-group" *ngIf="!isLogin">
+        <label>Email Address</label>
+        <input type="email" [(ngModel)]="formData.email" name="email" class="form-control" placeholder="name@company.com" required />
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="formData.password" name="password" class="form-control" placeholder="••••••••" required />
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">
+        <i class="fa-solid" [ngClass]="isLogin ? 'fa-right-to-bracket' : 'fa-user-plus'"></i>
+        {{ isLogin ? 'Sign In to Workspace' : 'Create Account' }}
+      </button>
+    </form>
+  </div>
+</div>

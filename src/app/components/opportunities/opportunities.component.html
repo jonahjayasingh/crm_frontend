@@ -1,0 +1,85 @@
+<div class="opportunities-page">
+  <div class="page-header">
+    <div>
+      <h2>Deal Opportunities</h2>
+      <p class="text-muted">Manage active deal stages and revenue forecasts</p>
+    </div>
+    <button class="btn btn-primary" (click)="openModal()"><i class="fa-solid fa-plus"></i> New Opportunity</button>
+  </div>
+
+  <div class="glass-card table-card">
+    <div class="table-container">
+      <div class="loading-spinner text-center py-5" *ngIf="isLoading">
+        <i class="fa-solid fa-circle-notch fa-spin fa-2x text-primary"></i>
+        <p class="mt-2 text-muted">Loading opportunities...</p>
+      </div>
+
+      <table *ngIf="!isLoading">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Stage</th>
+            <th>Probability</th>
+            <th>Close Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let opp of opportunities">
+            <td><strong>{{ opp.title }}</strong></td>
+            <td>{{ opp.customerName || 'Customer #' + opp.customerId }}</td>
+            <td class="text-success">${{ opp.amount | number:'1.2-2' }}</td>
+            <td><span class="badge badge-purple">{{ opp.stage }}</span></td>
+            <td>{{ opp.probability || 0 }}%</td>
+            <td>{{ opp.expectedCloseDate || '-' }}</td>
+            <td>
+              <button class="btn btn-danger btn-icon" (click)="deleteOpp(opp.id!)"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+          <tr *ngIf="opportunities.length === 0">
+            <td colspan="7" class="text-center py-4">No deal opportunities found.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showModal">
+    <div class="modal-content glass-card">
+      <h3>Create Deal Opportunity</h3>
+      <form (ngSubmit)="saveOpp()">
+        <div class="form-group">
+          <label>Deal Title *</label>
+          <input type="text" [(ngModel)]="formData.title" name="title" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label>Amount ($) *</label>
+          <input type="number" [(ngModel)]="formData.amount" name="amount" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label>Customer *</label>
+          <select [(ngModel)]="formData.customerId" name="customerId" class="form-control" required>
+            <option *ngFor="let c of customers" [value]="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Stage</label>
+          <select [(ngModel)]="formData.stage" name="stage" class="form-control">
+            <option value="PROSPECTING">PROSPECTING</option>
+            <option value="QUALIFICATION">QUALIFICATION</option>
+            <option value="PROPOSAL">PROPOSAL</option>
+            <option value="NEGOTIATION">NEGOTIATION</option>
+            <option value="CLOSED_WON">CLOSED_WON</option>
+            <option value="CLOSED_LOST">CLOSED_LOST</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Opportunity</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

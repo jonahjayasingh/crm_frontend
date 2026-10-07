@@ -1,0 +1,220 @@
+<div class="tasks-page">
+  <!-- Page Header & View Switcher -->
+  <div class="page-header">
+    <div>
+      <h2><i class="fa-solid fa-list-check me-2"></i> Task & Support Ticket Operations</h2>
+      <p class="text-muted">Drag & drop tasks across status columns or drop onto Tickets to create support incidents</p>
+    </div>
+    <div class="header-actions">
+      <div class="view-switcher btn-group me-2">
+        <button class="btn" [class.btn-primary]="viewMode === 'board'" [class.btn-secondary]="viewMode !== 'board'" (click)="viewMode = 'board'">
+          <i class="fa-solid fa-grip me-1"></i> Kanban Board
+        </button>
+        <button class="btn" [class.btn-primary]="viewMode === 'table'" [class.btn-secondary]="viewMode !== 'table'" (click)="viewMode = 'table'">
+          <i class="fa-solid fa-table me-1"></i> Table View
+        </button>
+      </div>
+      <button class="btn btn-primary" (click)="openModal()"><i class="fa-solid fa-plus me-1"></i> Add Task</button>
+    </div>
+  <div class="loading-spinner text-center py-5" *ngIf="isLoading">
+    <i class="fa-solid fa-circle-notch fa-spin fa-2x text-primary"></i>
+    <p class="mt-2 text-muted">Loading tasks...</p>
+  </div>
+
+  <!-- Drag-and-Drop Kanban Board View -->
+  <div class="kanban-wrapper" *ngIf="!isLoading && viewMode === 'board'">
+    
+    <!-- Task Columns (PENDING, IN_PROGRESS, COMPLETED) -->
+    <div class="kanban-grid">
+      
+      <!-- Pending Column -->
+      <div 
+        class="kanban-col"
+        [class.drag-over]="dragOverColumn === 'PENDING'"
+        (dragover)="onDragOver($event, 'PENDING')"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event, 'PENDING')">
+        <div class="col-header pending-header">
+          <span class="col-title"><i class="fa-regular fa-clock me-1"></i> PENDING TASKS</span>
+          <span class="col-count">{{ pendingTasks.length }}</span>
+        </div>
+        <div class="col-body">
+          <div 
+            *ngFor="let t of pendingTasks" 
+            class="kanban-card"
+            draggable="true"
+            (dragstart)="onDragStart($event, t)">
+            <div class="card-top">
+              <span class="badge" [ngClass]="getPriorityBadge(t.priority)">{{ t.priority }}</span>
+              <button class="btn-delete-icon" (click)="deleteTask(t.id!)" title="Delete"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <h4 class="card-title">{{ t.title }}</h4>
+            <p class="card-desc" *ngIf="t.description">{{ t.description }}</p>
+            <div class="card-footer">
+              <span class="due-date" *ngIf="t.dueDate"><i class="fa-regular fa-calendar me-1"></i> {{ t.dueDate }}</span>
+              <span class="drag-handle" title="Drag to move status or convert to Ticket"><i class="fa-solid fa-grip-vertical"></i></span>
+            </div>
+          </div>
+          <div class="empty-col-placeholder" *ngIf="pendingTasks.length === 0">
+            No pending tasks
+          </div>
+        </div>
+      </div>
+
+      <!-- In Progress Column -->
+      <div 
+        class="kanban-col"
+        [class.drag-over]="dragOverColumn === 'IN_PROGRESS'"
+        (dragover)="onDragOver($event, 'IN_PROGRESS')"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event, 'IN_PROGRESS')">
+        <div class="col-header progress-header">
+          <span class="col-title"><i class="fa-solid fa-spinner me-1"></i> IN PROGRESS</span>
+          <span class="col-count">{{ inProgressTasks.length }}</span>
+        </div>
+        <div class="col-body">
+          <div 
+            *ngFor="let t of inProgressTasks" 
+            class="kanban-card"
+            draggable="true"
+            (dragstart)="onDragStart($event, t)">
+            <div class="card-top">
+              <span class="badge" [ngClass]="getPriorityBadge(t.priority)">{{ t.priority }}</span>
+              <button class="btn-delete-icon" (click)="deleteTask(t.id!)" title="Delete"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <h4 class="card-title">{{ t.title }}</h4>
+            <p class="card-desc" *ngIf="t.description">{{ t.description }}</p>
+            <div class="card-footer">
+              <span class="due-date" *ngIf="t.dueDate"><i class="fa-regular fa-calendar me-1"></i> {{ t.dueDate }}</span>
+              <span class="drag-handle" title="Drag to move status or convert to Ticket"><i class="fa-solid fa-grip-vertical"></i></span>
+            </div>
+          </div>
+          <div class="empty-col-placeholder" *ngIf="inProgressTasks.length === 0">
+            No in-progress tasks
+          </div>
+        </div>
+      </div>
+
+      <!-- Completed Column -->
+      <div 
+        class="kanban-col"
+        [class.drag-over]="dragOverColumn === 'COMPLETED'"
+        (dragover)="onDragOver($event, 'COMPLETED')"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event, 'COMPLETED')">
+        <div class="col-header completed-header">
+          <span class="col-title"><i class="fa-solid fa-circle-check me-1"></i> COMPLETED</span>
+          <span class="col-count">{{ completedTasks.length }}</span>
+        </div>
+        <div class="col-body">
+          <div 
+            *ngFor="let t of completedTasks" 
+            class="kanban-card completed-card"
+            draggable="true"
+            (dragstart)="onDragStart($event, t)">
+            <div class="card-top">
+              <span class="badge badge-success">{{ t.priority }}</span>
+              <button class="btn-delete-icon" (click)="deleteTask(t.id!)" title="Delete"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <h4 class="card-title text-strikethrough">{{ t.title }}</h4>
+            <div class="card-footer">
+              <span class="due-date"><i class="fa-solid fa-check me-1"></i> Done</span>
+              <span class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></span>
+            </div>
+          </div>
+          <div class="empty-col-placeholder" *ngIf="completedTasks.length === 0">
+            No completed tasks
+          </div>
+        </div>
+      </div>
+
+      <!-- Convert to Support Ticket Target Dropzone -->
+      <div 
+        class="kanban-col ticket-dropzone-col"
+        [class.drag-over]="dragOverColumn === 'TICKET_DROP'"
+        (dragover)="onDragOver($event, 'TICKET_DROP')"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDropToTicket($event)">
+        <div class="col-header ticket-header">
+          <span class="col-title"><i class="fa-solid fa-headset me-1"></i> CONVERT TO TICKET</span>
+          <span class="col-count">{{ tickets.length }}</span>
+        </div>
+        <div class="ticket-drop-area">
+          <div class="drop-icon"><i class="fa-solid fa-arrow-down-to-bracket"></i></div>
+          <strong>DROP TASK HERE TO CREATE TICKET</strong>
+          <p>Task subject will be automatically mapped to a Support Ticket incident.</p>
+        </div>
+        <div class="recent-tickets-mini">
+          <span class="mini-label">ACTIVE TICKETS ({{ tickets.length }})</span>
+          <div class="mini-ticket-item" *ngFor="let tk of tickets | slice:0:3">
+            <i class="fa-solid fa-ticket text-warning me-1"></i>
+            <span>{{ tk.subject }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Standard Table View Mode -->
+  <div class="glass-card table-card" *ngIf="!isLoading && viewMode === 'table'">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Due Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of tasks">
+            <td><strong>{{ t.title }}</strong></td>
+            <td><span class="badge" [ngClass]="getPriorityBadge(t.priority)">{{ t.priority }}</span></td>
+            <td><span class="badge" [ngClass]="getStatusBadge(t.status)">{{ t.status }}</span></td>
+            <td>{{ t.dueDate || 'No date' }}</td>
+            <td>
+              <button class="btn btn-danger btn-icon" (click)="deleteTask(t.id!)"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Create Task Modal -->
+  <div class="modal-overlay" *ngIf="showModal">
+    <div class="modal-content glass-card">
+      <h3>Create Task</h3>
+      <form (ngSubmit)="saveTask()">
+        <div class="form-group">
+          <label>Task Title *</label>
+          <input type="text" [(ngModel)]="formData.title" name="title" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select [(ngModel)]="formData.priority" name="priority" class="form-control">
+            <option value="LOW">LOW</option>
+            <option value="MEDIUM">MEDIUM</option>
+            <option value="HIGH">HIGH</option>
+            <option value="URGENT">URGENT</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select [(ngModel)]="formData.status" name="status" class="form-control">
+            <option value="PENDING">PENDING</option>
+            <option value="IN_PROGRESS">IN_PROGRESS</option>
+            <option value="COMPLETED">COMPLETED</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

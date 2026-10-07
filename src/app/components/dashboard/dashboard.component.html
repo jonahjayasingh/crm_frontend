@@ -1,0 +1,138 @@
+<div class="dashboard-page">
+  <div class="page-header">
+    <div>
+      <h2>
+        {{ isExecutive ? 'Executive Overview' : 'Sales & My Work Workspace' }}
+      </h2>
+      <p class="text-muted">
+        Logged in as <strong class="text-accent">{{ userRole }}</strong> • Real-time CRM insights
+      </p>
+    </div>
+    <button class="btn btn-primary" (click)="loadMetrics()" [disabled]="isLoading">
+      <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="isLoading"></i> Refresh Metrics
+    </button>
+  </div>
+
+  <div class="loading-spinner text-center py-5" *ngIf="isLoading">
+    <i class="fa-solid fa-circle-notch fa-spin fa-2x text-primary"></i>
+    <p class="mt-2 text-muted">Loading metrics...</p>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+    <!-- Operational Overview for SALES & EMPLOYEE -->
+    <div class="kpi-grid" *ngIf="!isExecutive">
+    <div class="kpi-card glass-card">
+      <div class="kpi-icon icon-purple"><i class="fa-solid fa-user-check"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-label">My Assigned Leads</span>
+        <span class="kpi-value">{{ metrics?.myAssignedLeads || 0 }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card glass-card">
+      <div class="kpi-icon icon-cyan"><i class="fa-solid fa-clock"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-label">My Pending Tasks</span>
+        <span class="kpi-value">{{ metrics?.myPendingTasks || 0 }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card glass-card">
+      <div class="kpi-icon icon-warning"><i class="fa-solid fa-headset"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-label">My Open Tickets</span>
+        <span class="kpi-value">{{ metrics?.myOpenTickets || 0 }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card glass-card">
+      <div class="kpi-icon icon-emerald"><i class="fa-solid fa-users"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-label">Total Customers</span>
+        <span class="kpi-value">{{ metrics?.totalCustomers || 0 }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Executive KPI Grid for ADMIN & MANAGER -->
+  <div class="kpi-grid" *ngIf="isExecutive">
+    <div class="kpi-card glass-card">
+      <div class="kpi-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-label">Total Customers</span>
+        <span class="kpi-value">{{ metrics?.totalCustomers || 0 }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card glass-card">
+      <div class="kpi-icon icon-purple"><i class="fa-solid fa-user-gear"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-label">Active Leads</span>
+        <span class="kpi-value">{{ metrics?.totalLeads || 0 }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card glass-card">
+      <div class="kpi-icon icon-cyan"><i class="fa-solid fa-chart-line"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-label">Opportunities</span>
+        <span class="kpi-value">{{ metrics?.totalOpportunities || 0 }}</span>
+      </div>
+    </div>
+
+    <div class="kpi-card glass-card">
+      <div class="kpi-icon icon-emerald"><i class="fa-solid fa-dollar-sign"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-label">Pipeline Value</span>
+        <span class="kpi-value">${{ (metrics?.totalPipelineValue || 0) | number:'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="metrics-row">
+    <div class="card glass-card span-2">
+      <div class="card-header">
+        <h3>Revenue & Commercial Pipeline</h3>
+      </div>
+      <div class="summary-stats">
+        <div class="stat-box">
+          <span class="stat-title">Collected Revenue</span>
+          <span class="stat-num text-success">${{ (metrics?.totalRevenueCollected || 0) | number:'1.2-2' }}</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-title">Invoices Issued</span>
+          <span class="stat-num">{{ metrics?.totalInvoices || 0 }}</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-title">Quotations Drafted</span>
+          <span class="stat-num">{{ metrics?.totalQuotations || 0 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card glass-card">
+      <div class="card-header">
+        <h3>Operations Overview</h3>
+      </div>
+      <div class="health-list">
+        <div class="health-item">
+          <span><i class="fa-solid fa-list-check text-purple"></i> Total Tasks</span>
+          <strong>{{ metrics?.totalTasks || 0 }}</strong>
+        </div>
+        <div class="health-item">
+          <span><i class="fa-regular fa-calendar-check text-primary"></i> Scheduled Events</span>
+          <strong>{{ metrics?.totalEvents || 0 }}</strong>
+        </div>
+        <div class="health-item">
+          <span><i class="fa-solid fa-headset text-warning"></i> Open Support Tickets</span>
+          <strong class="text-warning">{{ metrics?.openTickets || 0 }}</strong>
+        </div>
+        <div class="health-item">
+          <span><i class="fa-solid fa-box text-cyan"></i> Products Catalog</span>
+          <strong>{{ metrics?.totalProducts || 0 }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+  </ng-container>
+</div>
